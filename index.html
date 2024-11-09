@@ -11,12 +11,12 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; /* 修改为左上角对齐 */
+            align-items: center;
         }
         .container {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* 修改为左上角对齐 */
+            flex-direction: column; /* 更改布局为垂直方向 */
+            align-items: center;
             padding: 10px;
         }
         .tool-bar {
@@ -67,26 +67,28 @@
             width: 90px; /* 滑块长度 */
             transform: rotate(0deg); /* 水平方向滑块 */
         }
-        .thickness-group {
-            display: flex;
-            flex-direction: row; /* 水平布局 */
-            align-items: center;
-            gap: 5px; /* 控制滑块与值之间的间距 */
-        }
-        .thickness-value {
-            font-size: 14px;
-            width: 40px; /* 固定宽度，确保数值变化不会引起移动 */
-            text-align: center; /* 居中显示数值 */
-        }
+
+
+  .thickness-group {
+    display: flex;
+    flex-direction: row; /* 水平布局 */
+    align-items: center;
+    gap: 5px; /* 控制滑块与值之间的间距 */
+}
+
+.thickness-value {
+    font-size: 14px;
+    width: 40px; /* 固定宽度，确保数值变化不会引起移动 */
+    text-align: center; /* 居中显示数值 */
+}
+
         .canvas-container {
             display: flex;
-            justify-content: flex-start; /* 左对齐画布 */
-            align-items: flex-start;     /* 上对齐画布 */
+            justify-content: center;
+            align-items: center;
             margin-top: 10px;
         }
         canvas {
-            width: 100%;                /* 设置为相对宽度 */
-            height: auto;               /* 保持比例缩放 */
             border: 1px solid black;
             background-color: white;
             touch-action: none;
@@ -114,10 +116,11 @@
                 <button id="yellow" class="color-button" style="background-color: yellow;"></button>
                 <input type="color" id="customColorInput" title="选择颜色" style="width: 20px; height: 20px; padding: 0; border: none;">
             </div>
-            <div class="thickness-group">
-                <input type="range" id="thicknessSlider" class="slider" min="1" max="30" value="5">
-                <div class="thickness-value" id="thicknessValue">5 px</div>
-            </div>
+  <div class="thickness-group">
+    <input type="range" id="thicknessSlider" class="slider" min="1" max="30" value="5">
+    <div class="thickness-value" id="thicknessValue">5 px</div>
+</div>
+
         </div>
         <!-- 画布在底部 -->
         <div class="canvas-container">
@@ -125,6 +128,7 @@
         </div>
     </div>
     <script>
+        // JavaScript 保持不变
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
         const penButton = document.getElementById('pen');

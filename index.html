@@ -216,6 +216,43 @@
                 document.body.removeChild(messageBox);
             }, 2000);
         }
+
+        // 粘贴图像并按比例缩放
+        document.addEventListener('paste', async (event) => {
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                for (const clipboardItem of clipboardItems) {
+                    if (clipboardItem.types.includes('image/png') || clipboardItem.types.includes('image/jpeg')) {
+                        const blob = await clipboardItem.getType(clipboardItem.types[0]);
+                        const img = new Image();
+                        img.src = URL.createObjectURL(blob);
+
+                        img.onload = () => {
+                            let drawWidth = img.width;
+                            let drawHeight = img.height;
+
+                            // 如果图像尺寸大于画布，按比例缩小
+                            const widthRatio = canvas.width / drawWidth;
+                            const heightRatio = canvas.height / drawHeight;
+                            const scale = Math.min(widthRatio, heightRatio);
+                            drawWidth *= scale;
+                            drawHeight *= scale;
+
+                            // 居中显示图像
+                            const offsetX = (canvas.width - drawWidth) / 2;
+                            const offsetY = (canvas.height - drawHeight) / 2;
+
+                            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+                            URL.revokeObjectURL(img.src);
+                        };
+
+                        break;
+                    }
+                }
+            } catch (error) {
+                console.error("粘贴图像失败：", error);
+            }
+        });
     </script>
 </body>
 </html>

@@ -119,7 +119,9 @@
         let currentColor = 'black';
         let currentThickness = 5;
         let drawing = false;
+        let mode = 'pen'; // 用于区分画笔和橡皮
         let undoStack = [];
+        let redoStack = [];
         const maxHistory = 50;
 
         function resizeCanvas() {
@@ -142,8 +144,14 @@
         canvas.addEventListener('pointermove', (event) => {
             if (drawing) {
                 ctx.lineTo(event.offsetX, event.offsetY);
-                ctx.strokeStyle = currentColor;
                 ctx.lineWidth = currentThickness * (event.pressure || 1); // 结合压力的粗细
+                if (mode === 'pen') {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = currentColor;
+                } else if (mode === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.strokeStyle = 'rgba(0,0,0,1)';
+                }
                 ctx.lineJoin = 'round';
                 ctx.lineCap = 'round';
                 ctx.stroke();
@@ -158,16 +166,39 @@
         function saveState() {
             if (undoStack.length >= maxHistory) undoStack.shift();
             undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            redoStack = []; // 撤销新操作后清除重做栈
         }
 
-        document.getElementById('pen').addEventListener('click', () => {
-            currentColor = 'black';
-            currentThickness = 5;
-        });
+        function undo() {
+            if (undoStack.length > 0) {
+                redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                const lastState = undoStack.pop();
+                ctx.putImageData(lastState, 0, 0);
+            }
+        }
 
+        function redo() {
+            if (redoStack.length > 0) {
+                undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                const restoredState = redoStack.pop();
+                ctx.putImageData(restoredState, 0, 0);
+            }
+        }
+
+        document.getElementById('pen').addEventListener('click', () => setMode('pen'));
+        document.getElementById('eraser').addEventListener('click', () => setMode('eraser'));
         document.getElementById('clear').addEventListener('click', () => {
+            saveState();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
+        document.getElementById('undo').addEventListener('click', undo);
+        document.getElementById('redo').addEventListener('click', redo);
+
+        function setMode(newMode) {
+            mode = newMode;
+            [document.getElementById('pen'), document.getElementById('eraser')].forEach(button => button.classList.remove('active'));
+            document.getElementById(newMode).classList.add('active');
+        }
 
         const thicknessSlider = document.getElementById('thicknessSlider');
         thicknessSlider.addEventListener('input', (event) => {
@@ -175,7 +206,6 @@
             document.getElementById('thicknessValue').textContent = `${currentThickness} px`;
         });
 
-        // 恢复复制到剪贴板功能
         const copyButton = document.getElementById('copyToClipboard');
         copyButton.addEventListener('click', () => {
             const tempCanvas = document.createElement('canvas');
@@ -217,7 +247,6 @@
             }, 2000);
         }
 
-        // 粘贴图像并按比例缩放
         document.addEventListener('paste', async (event) => {
             try {
                 const clipboardItems = await navigator.clipboard.read();
@@ -231,14 +260,12 @@
                             let drawWidth = img.width;
                             let drawHeight = img.height;
 
-                            // 如果图像尺寸大于画布，按比例缩小
                             const widthRatio = canvas.width / drawWidth;
                             const heightRatio = canvas.height / drawHeight;
                             const scale = Math.min(widthRatio, heightRatio);
                             drawWidth *= scale;
                             drawHeight *= scale;
 
-                            // 居中显示图像
                             const offsetX = (canvas.width - drawWidth) / 2;
                             const offsetY = (canvas.height - drawHeight) / 2;
 
@@ -253,6 +280,27 @@
                 console.error("粘贴图像失败：", error);
             }
         });
+
+        const colorButtons = document.querySelectorAll('.color-button');
+        colorButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                currentColor = button.style.backgroundColor;
+                setMode('pen'); // 选择颜色后自动切换到画笔模式
+                updateActiveColorButton(button);
+            });
+        });
+
+        const customColorInput = document.getElementById('customColorInput');
+        customColorInput.addEventListener('input', (event) => {
+            currentColor = event.target.value;
+            setMode('pen'); // 选择颜色后自动切换到画笔模式
+            updateActiveColorButton(null); // 自定义颜色没有按钮高亮
+        });
+
+        function updateActiveColorButton(activeButton) {
+            colorButtons.forEach(button => button.classList.remove('selected-color'));
+            if (activeButton) activeButton.classList.add('selected-color');
+        }
     </script>
 </body>
 </html>

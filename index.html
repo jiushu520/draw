@@ -124,11 +124,31 @@
         let redoStack = [];
         const maxHistory = 50;
 
+        // 用于保存缩放前的图像数据
+        let savedImageData = null;
+
+        function saveCurrentImage() {
+            // 保存当前画布内容
+            savedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        function restoreSavedImage() {
+            // 将保存的内容绘制回画布
+            if (savedImageData) {
+                const scaleX = canvas.width / savedImageData.width;
+                const scaleY = canvas.height / savedImageData.height;
+                ctx.save();
+                ctx.scale(scaleX, scaleY);
+                ctx.putImageData(savedImageData, 0, 0);
+                ctx.restore();
+            }
+        }
+
         function resizeCanvas() {
-            const savedImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            saveCurrentImage();
             canvas.width = document.querySelector('.canvas-container').clientWidth;
             canvas.height = document.querySelector('.canvas-container').clientHeight;
-            ctx.putImageData(savedImage, 0, 0);
+            restoreSavedImage();
         }
 
         window.addEventListener('resize', resizeCanvas);

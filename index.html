@@ -234,10 +234,12 @@
 
         document.getElementById('pen').addEventListener('click', () => setMode('pen'));
         document.getElementById('eraser').addEventListener('click', () => setMode('eraser'));
-        document.getElementById('clear').addEventListener('click', () => {
-            saveState();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        });
+document.getElementById('clear').addEventListener('click', () => {
+    saveState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setMode('pen'); // 清除后自动切换到画笔模式
+});
+
         document.getElementById('undo').addEventListener('click', undo);
         document.getElementById('redo').addEventListener('click', redo);
 

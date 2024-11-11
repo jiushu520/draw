@@ -123,22 +123,40 @@
                 <button id="undo" title="撤销">↩️</button>
                 <button id="redo" title="重做">↪️</button>
             </div>
+
+
+        <div class="thickness-group">
+
+                <input type="range" id="thicknessSlider" class="slider" min="1" max="30" value="5">
+                <div class="thickness-value" id="thicknessValue">5 </div>
+                <input type="color" id="customColorInput" title="选择颜色" style="width: 20px; height: 20px; padding: 0; border: none;">
+            </div>
             <div class="color-group">
                 <button id="black" class="color-button selected-color" style="background-color: black;"></button>
                 <button id="red" class="color-button" style="background-color: red;"></button>
                 <button id="blue" class="color-button" style="background-color: blue;"></button>
                 <button id="green" class="color-button" style="background-color: green;"></button>
-                <button id="yellow" class="color-button" style="background-color: yellow;"></button>
-                <input type="color" id="customColorInput" title="选择颜色" style="width: 20px; height: 20px; padding: 0; border: none;">
-            </div>
-            <div class="thickness-group">
-                <input type="range" id="thicknessSlider" class="slider" min="1" max="30" value="5">
-                <div class="thickness-value" id="thicknessValue">5 px</div>
-            </div>
+                <button id="yellow" class="color-button" style="background-color: #F1D206;"></button>
+
+
         </div>
+
+    
+          </div>  
+
+
+
+
+
+
+
+
         <div class="canvas-container">
+
             <canvas id="drawingCanvas"></canvas>
+
         </div>
+
     </div>
     <script>
         const canvas = document.getElementById('drawingCanvas');
@@ -252,7 +270,7 @@ document.getElementById('clear').addEventListener('click', () => {
         const thicknessSlider = document.getElementById('thicknessSlider');
         thicknessSlider.addEventListener('input', (event) => {
             currentThickness = event.target.value;
-            document.getElementById('thicknessValue').textContent = `${currentThickness} px`;
+            document.getElementById('thicknessValue').textContent = `${currentThickness} `;
         });
 
         const copyButton = document.getElementById('copyToClipboard');
